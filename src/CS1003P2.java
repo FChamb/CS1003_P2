@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,7 +24,11 @@ public class CS1003P2 {
             if (input.equals("--search")) {
                 this.arguments.put("search", args[i + 1]);
             } else if (input.equals("--query")) {
-                this.arguments.put("query", args[i + 1]);
+                if (args[i + 1].split(" ").length > 1) {
+                    this.arguments.put("query", args[i + 1].replace(" ", "+"));
+                } else {
+                    this.arguments.put("query", args[i + 1]);
+                }
             } else if (input.equals("--cache")) {
                 this.arguments.put("cache", args[i + 1]);
             }
@@ -33,54 +36,43 @@ public class CS1003P2 {
     }
 
     public void search() {
+        String query = arguments.get("query");
+        URL url = null;
+        InputStream stream = null;
+        Scanner scan = null;
         if (arguments.get("search").toLowerCase().equals("author")) {
-            URL url = null;
             try {
-                url = new URL("https://dblp.org/search/author/api");
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-            InputStream stream = null;
-            try {
+                url = new URL("https://dblp.org/search/author/api?format=xml&c=0&h=40&q=" + query);
+                System.out.println(url);
                 stream = url.openStream();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            Scanner scan = new Scanner(new InputStreamReader(stream));
+            scan = new Scanner(new InputStreamReader(stream));
             while (scan.hasNext()) {
                 System.out.println(scan.nextLine());
             }
         } else if (arguments.get("search").toLowerCase().equals("publication")) {
-            URL url = null;
             try {
-                url = new URL("https://dblp.org/search/publ/api");
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-            InputStream stream = null;
-            try {
+                url = new URL("https://dblp.org/search/publ/api?format=xml&c=0&h=40&q=" + query);
+                System.out.println(url);
                 stream = url.openStream();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            Scanner scan = new Scanner(new InputStreamReader(stream));
+            scan = new Scanner(new InputStreamReader(stream));
             while (scan.hasNext()) {
                 System.out.println(scan.nextLine());
             }
         } else if (arguments.get("search").toLowerCase().equals("venue")) {
-            URL url = null;
             try {
-                url = new URL("https://dblp.org/search/venue/api");
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-            InputStream stream = null;
-            try {
+                url = new URL("https://dblp.org/search/author/api?format=xml&c=0&h=40&q=" + query);
+                System.out.println(url);
                 stream = url.openStream();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            Scanner scan = new Scanner(new InputStreamReader(stream));
+            scan = new Scanner(new InputStreamReader(stream));
             while (scan.hasNext()) {
                 System.out.println(scan.nextLine());
             }
