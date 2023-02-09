@@ -1,8 +1,15 @@
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -79,6 +86,30 @@ public class CS1003P2 {
     }
 
     public void callToPublAPI(URL url) {
+        try {
+            String title = "";
+            int authors = 0;
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(url.openStream());
+            String rootElement = document.getDocumentElement().getNodeName();
+            document.getDocumentElement().normalize();
+            NodeList nodeList = document.getElementsByTagName("hit");
+            System.out.println("Names of Publications for " + url.toString().substring(url.toString().indexOf("q=") + 2) + ":");
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                authors = 0;
+                Node venueName = nodeList.item(i);
+                if (venueName.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) venueName;
+                    authors = element.getElementsByTagName("author").getLength();
+                    title = element.getElementsByTagName("title").item(0).getTextContent();
+                    System.out.println(title + " - " + authors + " authors.");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        /**
         InputStream stream = null;
         try {
             stream = url.openStream();
@@ -86,30 +117,37 @@ public class CS1003P2 {
             throw new RuntimeException(e);
         }
         Scanner scan = new Scanner(new InputStreamReader(stream));
-        String title = "";
-        int authors = 0;
         while (scan.hasNext()) {
             String line = scan.nextLine();
-
-            System.out.println(scan.nextLine());
+            if (line.contains("<author")) {
+                String[] num = line.split("pid");
+                authors += num.length - 1;
+            }
+            if (line.contains("<title>")) {
+                title = line.substring(line.indexOf("e>") + 2, line.indexOf("</"));
+            }
         }
+         */
     }
 
     public void callToVenueAPI(URL url) {
-        InputStream stream = null;
         try {
-            stream = url.openStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        Scanner scan = new Scanner(new InputStreamReader(stream));
-        System.out.println("Names of Venues for " + url.toString().substring(url.toString().indexOf("q=") + 2) + ":\n");
-        while (scan.hasNext()) {
-            String line = scan.nextLine();
-            if (line.contains("<venue>")) {
-                String takenFromLine = line.substring(line.indexOf("e>") + 2, line.indexOf("</"));
-                System.out.println(takenFromLine);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(url.openStream());
+            String rootElement = document.getDocumentElement().getNodeName();
+            document.getDocumentElement().normalize();
+            NodeList nodeList = document.getElementsByTagName("hit");
+            System.out.println("Names of Venues for " + url.toString().substring(url.toString().indexOf("q=") + 2) + ":");
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node venueName = nodeList.item(i);
+                if (venueName.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) venueName;
+                    System.out.println(element.getElementsByTagName("venue").item(0).getTextContent());
+                }
             }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 }
