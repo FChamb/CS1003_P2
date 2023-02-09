@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,38 +44,71 @@ public class CS1003P2 {
         if (arguments.get("search").toLowerCase().equals("author")) {
             try {
                 url = new URL("https://dblp.org/search/author/api?format=xml&c=0&h=40&q=" + query);
-                System.out.println(url);
-                stream = url.openStream();
-            } catch (IOException e) {
+                callToAuthorAPI(url);
+            } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
-            }
-            scan = new Scanner(new InputStreamReader(stream));
-            while (scan.hasNext()) {
-                System.out.println(scan.nextLine());
             }
         } else if (arguments.get("search").toLowerCase().equals("publication")) {
             try {
                 url = new URL("https://dblp.org/search/publ/api?format=xml&c=0&h=40&q=" + query);
-                System.out.println(url);
-                stream = url.openStream();
-            } catch (IOException e) {
+                callToPublAPI(url);
+            } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
-            }
-            scan = new Scanner(new InputStreamReader(stream));
-            while (scan.hasNext()) {
-                System.out.println(scan.nextLine());
             }
         } else if (arguments.get("search").toLowerCase().equals("venue")) {
             try {
-                url = new URL("https://dblp.org/search/author/api?format=xml&c=0&h=40&q=" + query);
-                System.out.println(url);
-                stream = url.openStream();
-            } catch (IOException e) {
+                url = new URL("https://dblp.org/search/venue/api?format=xml&c=0&h=40&q=" + query);
+                callToVenueAPI(url);
+            } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
-            scan = new Scanner(new InputStreamReader(stream));
-            while (scan.hasNext()) {
-                System.out.println(scan.nextLine());
+        }
+    }
+
+    public void callToAuthorAPI(URL url) {
+        InputStream stream = null;
+        try {
+            stream = url.openStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Scanner scan = new Scanner(new InputStreamReader(stream));
+        while (scan.hasNext()) {
+            System.out.println(scan.nextLine());
+        }
+    }
+
+    public void callToPublAPI(URL url) {
+        InputStream stream = null;
+        try {
+            stream = url.openStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Scanner scan = new Scanner(new InputStreamReader(stream));
+        String title = "";
+        int authors = 0;
+        while (scan.hasNext()) {
+            String line = scan.nextLine();
+
+            System.out.println(scan.nextLine());
+        }
+    }
+
+    public void callToVenueAPI(URL url) {
+        InputStream stream = null;
+        try {
+            stream = url.openStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Scanner scan = new Scanner(new InputStreamReader(stream));
+        System.out.println("Names of Venues for " + url.toString().substring(url.toString().indexOf("q=") + 2) + ":\n");
+        while (scan.hasNext()) {
+            String line = scan.nextLine();
+            if (line.contains("<venue>")) {
+                String takenFromLine = line.substring(line.indexOf("e>") + 2, line.indexOf("</"));
+                System.out.println(takenFromLine);
             }
         }
     }
