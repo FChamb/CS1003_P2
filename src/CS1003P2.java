@@ -169,7 +169,7 @@ public class CS1003P2 {
                     Element element = (Element) publName;
                     authors = element.getElementsByTagName("author").getLength();
                     title = element.getElementsByTagName("title").item(0).getTextContent();
-                    System.out.println(title + " - " + authors + " authors.");
+                    System.out.println(title + " (number of authors: " + authors + ")");
                 }
             }
         } catch (Exception e) {
