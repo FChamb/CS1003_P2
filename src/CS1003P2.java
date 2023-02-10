@@ -110,7 +110,6 @@ public class CS1003P2 {
             }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
-            System.out.println("Names of Authors for " + this.url.substring(this.url.indexOf("q=") + 2).replace("+", " ") + ":");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node authorName = nodeList.item(i);
                 if (authorName.getNodeType() == Node.ELEMENT_NODE) {
@@ -164,7 +163,6 @@ public class CS1003P2 {
             }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
-            System.out.println("Names of Publications for " + this.url.substring(this.url.indexOf("q=") + 2).replace("+", " ") + ":");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node publName = nodeList.item(i);
                 if (publName.getNodeType() == Node.ELEMENT_NODE) {
@@ -192,7 +190,6 @@ public class CS1003P2 {
             }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
-            System.out.println("Names of Venues for " + this.url.substring(this.url.indexOf("q=") + 2).replace("+", " ") + ":");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node venueName = nodeList.item(i);
                 if (venueName.getNodeType() == Node.ELEMENT_NODE) {
