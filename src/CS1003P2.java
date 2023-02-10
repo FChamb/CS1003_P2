@@ -11,16 +11,18 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class CS1003P2 {
     private HashMap<String, String> arguments = new HashMap<>();
+    String url = "https://dblp.org/search/~/api?format=xml&c=0&h=40&q=";
+    String encodedURL = "";
 
     public static void main(String[] args) {
         if (args.length > 6) {
@@ -57,69 +59,58 @@ public class CS1003P2 {
     }
 
     public void search() {
-        String query = arguments.get("query");
-        URL url = null;
+        String query = this.arguments.get("query");
         InputStream stream = null;
-        Scanner scan = null;
-        if (arguments.get("search").toLowerCase().equals("author")) {
-            try {
-                Boolean bool = true;
-                url = new URL("https://dblp.org/search/author/api?format=xml&c=0&h=40&q=" + query);
-                if (!checkCache(url)) {
-                    String cachePath = arguments.get("cache");
-                    File file = new File(cachePath + "/" + URLEncoder.encode(String.valueOf(url)));
-                    bool = false;
-                }
-                callToAuthorAPI(url);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+        if (this.arguments.get("search").equals("author")) {
+            this.url = this.url.replace("~", "author") + query;
+            this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
+            String cachePath = this.arguments.get("cache") + "/" + this.encodedURL;
+            if (!checkCache()) {
+                File file = new File(cachePath + ".xml");
             }
-        } else if (arguments.get("search").toLowerCase().equals("publication")) {
-            try {
-                Boolean bool = true;
-                url = new URL("https://dblp.org/search/publ/api?format=xml&c=0&h=40&q=" + query);
-                if (!checkCache(url)) {
-                    String cachePath = arguments.get("cache");
-                    File file = new File(cachePath + "/" + URLEncoder.encode(String.valueOf(url)));
-                    bool = false;
-                }
-                callToPublAPI(url);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+            callToAuthorAPI();
+        } else if (this.arguments.get("search").equals("publication")) {
+            this.url = this.url.replace("~", "publ") + query;
+            this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
+            String cachePath = this.arguments.get("cache") + "/" + this.encodedURL;
+            if (!checkCache()) {
+                File file = new File(cachePath + ".xml");
             }
-        } else if (arguments.get("search").toLowerCase().equals("venue")) {
-            try {
-                Boolean bool = true;
-                url = new URL("https://dblp.org/search/venue/api?format=xml&c=0&h=40&q=" + query);
-                if (!checkCache(url)) {
-                    String cachePath = arguments.get("cache");
-                    File file = new File(cachePath + "/" + URLEncoder.encode(String.valueOf(url)));
-                    bool = false;
-                }
-                callToVenueAPI(url);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+            callToPublAPI();
+        } else if (this.arguments.get("search").equals("venue")) {
+            this.url = this.url.replace("~", "venue") + query;
+            this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
+            String cachePath = this.arguments.get("cache") + "/" + encodedURL;
+            if (!checkCache()) {
+                File file = new File(cachePath + ".xml");
             }
+            callToVenueAPI();
         }
     }
 
-    public boolean checkCache(URL url) {
-        File file = new File(URLEncoder.encode(String.valueOf(url)));
-        if (file.exists()) {
-            return true;
-        }
-        return false;
+    public boolean checkCache() {
+        String path = this.arguments.get("cache") + "/" + this.encodedURL;
+        File file = new File(path);
+        return file.exists();
     }
 
-    public void callToAuthorAPI(URL url) {
+    public void callToAuthorAPI() {
         try {
             String author = "";
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(url.openStream());
+            Document document = null;
+            if (checkCache()) {
+                File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
+                document = builder.parse(file);
+            } else {
+                FileOutputStream outputStream = new FileOutputStream(this.arguments.get("cache") + "/" + this.encodedURL);
+                document = builder.parse(new URL(this.url).openStream());
+                writeXMLtoCache(document, outputStream);
+            }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
-            System.out.println("Names of Authors for " + url.toString().substring(url.toString().indexOf("q=") + 2) + ":");
+            System.out.println("Names of Authors for " + this.url.substring(this.url.indexOf("q=") + 2).replace("+", " ") + ":");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node authorName = nodeList.item(i);
                 if (authorName.getNodeType() == Node.ELEMENT_NODE) {
@@ -158,18 +149,23 @@ public class CS1003P2 {
         }
     }
 
-    public void callToPublAPI(URL url) {
+    public void callToPublAPI() {
         try {
             String title = "";
             int authors = 0;
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(url.openStream());
+            Document document = null;
+            if (checkCache()) {
+                File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
+                document = builder.parse(file);
+            } else {
+                document = builder.parse(new URL(this.url).openStream());
+            }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
-            System.out.println("Names of Publications for " + url.toString().substring(url.toString().indexOf("q=") + 2) + ":");
+            System.out.println("Names of Publications for " + this.url.substring(this.url.indexOf("q=") + 2).replace("+", " ") + ":");
             for (int i = 0; i < nodeList.getLength(); i++) {
-                authors = 0;
                 Node publName = nodeList.item(i);
                 if (publName.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) publName;
@@ -183,14 +179,20 @@ public class CS1003P2 {
         }
     }
 
-    public void callToVenueAPI(URL url) {
+    public void callToVenueAPI() {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(url.openStream());
+            Document document = null;
+            if (checkCache()) {
+                File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
+                document = builder.parse(file);
+            } else {
+                document = builder.parse(new URL(this.url).openStream());
+            }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
-            System.out.println("Names of Venues for " + url.toString().substring(url.toString().indexOf("q=") + 2) + ":");
+            System.out.println("Names of Venues for " + this.url.substring(this.url.indexOf("q=") + 2).replace("+", " ") + ":");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node venueName = nodeList.item(i);
                 if (venueName.getNodeType() == Node.ELEMENT_NODE) {
