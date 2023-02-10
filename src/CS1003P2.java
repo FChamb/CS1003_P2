@@ -158,9 +158,10 @@ public class CS1003P2 {
             if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
-                System.out.println(document);
             } else {
+                FileOutputStream outputStream = new FileOutputStream(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(new URL(this.url).openStream());
+                writeXMLtoCache(document, outputStream);
             }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
@@ -187,7 +188,9 @@ public class CS1003P2 {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
+                FileOutputStream outputStream = new FileOutputStream(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(new URL(this.url).openStream());
+                writeXMLtoCache(document, outputStream);
             }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
