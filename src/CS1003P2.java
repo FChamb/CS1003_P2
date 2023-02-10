@@ -158,6 +158,7 @@ public class CS1003P2 {
             if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
+                System.out.println(document);
             } else {
                 document = builder.parse(new URL(this.url).openStream());
             }
