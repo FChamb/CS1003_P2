@@ -71,13 +71,7 @@ public class CS1003P2 {
                     System.out.println("Malformed command line arguments.");
                     System.exit(1);
                 }
-                File file = new File(args[i + 1]);
-                if (!file.exists()) {
-                    System.out.println("Cache directory doesn't exist: " + args[i + 1]);
-                    System.exit(1);
-                } else {
-                    this.arguments.put("cache", args[i + 1]);
-                }
+                this.arguments.put("cache", args[i + 1]);
             }
         }
     }
