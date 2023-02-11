@@ -20,24 +20,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 
-/**
- * The CS1003P2 class contains three private attributes, arguments, url, and encodedURL. The hashmap arguments
- * contains all three of the command line functions. The url contains a string which has the default link to the api.
- * This is modified based on a search input. The encodedURL is blank by default and is set to the proper encoded url
- * one the url variable has been updated.
- */
 public class CS1003P2 {
     private HashMap<String, String> arguments = new HashMap<>();
-    private String url = "https://dblp.org/search/~/api?format=xml&c=0&h=40&q=";
-    private String encodedURL = "";
+    String url = "https://dblp.org/search/~/api?format=xml&c=0&h=40&q=";
+    String encodedURL = "";
 
-    /**
-     * The main method acts as a starting point for this program. There are three checks to make sure that
-     * the user inputted all the required command line arguments. Should one of the arguments not be present,
-     * a correctly worded message is returned. Should all the checks pass, an instance of CS1003P2 is created and
-     * findArguments/search are both called.
-     * @param args - the command line arguments presented to the program by the user
-     */
     public static void main(String[] args) {
         if (!Arrays.toString(args).contains("--search")) {
             System.out.println("Missing value for --search");
@@ -57,12 +44,6 @@ public class CS1003P2 {
         check.search();
     }
 
-    /**
-     * Find arguments takes the user's command line arguments as input. A for loop cycles through the array,
-     * and there are three checks. Each of the checks see if a specific value equals "--search", "--query",
-     * or "--cache". For search and cache
-     * @param args
-     */
     public void findArguments(String[] args) {
         for (int i = 0; i < args.length; i++) {
             String input = args[i];
@@ -115,10 +96,6 @@ public class CS1003P2 {
             System.out.println("Malformed command line arguments.");
             System.exit(1);
         }
-        if (!checkDirectory()) {
-            System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
-            System.exit(1);
-        }
     }
 
     public boolean checkDirectory() {
@@ -139,7 +116,10 @@ public class CS1003P2 {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = null;
-            if (checkCache()) {
+            if (!checkDirectory()) {
+                System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
+                System.exit(1);
+            } else if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
@@ -194,7 +174,10 @@ public class CS1003P2 {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = null;
-            if (checkCache()) {
+            if (!checkDirectory()) {
+                System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
+                System.exit(1);
+            } else if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
@@ -223,7 +206,10 @@ public class CS1003P2 {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = null;
-            if (checkCache()) {
+            if (!checkDirectory()) {
+                System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
+                System.exit(1);
+            } else if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
