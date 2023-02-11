@@ -77,27 +77,34 @@ public class CS1003P2 {
     }
 
     public void search() {
+        changeURL();
+        if (!checkDirectory()) {
+            System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
+            System.exit(1);
+        }
+        if (this.url.contains("author")) {
+            callToAuthorAPI();
+        } else if (this.url.contains("publ")) {
+            callToPublAPI();
+        } else if (this.url.contains("venue")) {
+            callToVenueAPI();
+        }
+    }
+
+    public void changeURL() {
         String query = this.arguments.get("query");
-        InputStream stream = null;
         if (this.arguments.get("search").equals("author")) {
             this.url = this.url.replace("~", "author") + query;
             this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
-            callToAuthorAPI();
         } else if (this.arguments.get("search").equals("publication")) {
             this.url = this.url.replace("~", "publ") + query;
             this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
-            callToPublAPI();
         } else if (this.arguments.get("search").equals("venue")) {
             this.url = this.url.replace("~", "venue") + query;
             this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
-            callToVenueAPI();
         } else {
             System.out.println("Invalid value for --search: " + this.arguments.get("search"));
             System.out.println("Malformed command line arguments.");
-            System.exit(1);
-        }
-        if (!checkDirectory()) {
-            System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
             System.exit(1);
         }
     }
