@@ -67,7 +67,7 @@ public class CS1003P2 {
                 }
             } else if (input.equals("--cache")) {
                 if (args.length == i + 1) {
-                    System.out.println("Missing value for --query");
+                    System.out.println("Missing value for --cache");
                     System.out.println("Malformed command line arguments.");
                     System.exit(1);
                 }
@@ -88,26 +88,32 @@ public class CS1003P2 {
         if (this.arguments.get("search").equals("author")) {
             this.url = this.url.replace("~", "author") + query;
             this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
+            /**
             String cachePath = this.arguments.get("cache") + "/" + this.encodedURL;
             if (!checkCache()) {
                 File file = new File(cachePath + ".xml");
             }
+             */
             callToAuthorAPI();
         } else if (this.arguments.get("search").equals("publication")) {
             this.url = this.url.replace("~", "publ") + query;
             this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
+            /**
             String cachePath = this.arguments.get("cache") + "/" + this.encodedURL;
             if (!checkCache()) {
                 File file = new File(cachePath + ".xml");
             }
+             */
             callToPublAPI();
         } else if (this.arguments.get("search").equals("venue")) {
             this.url = this.url.replace("~", "venue") + query;
             this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
+            /**
             String cachePath = this.arguments.get("cache") + "/" + encodedURL;
             if (!checkCache()) {
                 File file = new File(cachePath + ".xml");
             }
+             */
             callToVenueAPI();
         } else {
             System.out.println("Invalid value for --search: " + this.arguments.get("search"));
