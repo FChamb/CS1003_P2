@@ -28,15 +28,15 @@ public class CS1003P2 {
     public static void main(String[] args) {
         if (!Arrays.toString(args).contains("--search")) {
             System.out.println("Missing value for --search");
-            System.out.println("Malformed command line argument.");
+            System.out.println("Malformed command line arguments.");
             System.exit(1);
         } else if (!Arrays.toString(args).contains("--cache")) {
             System.out.println("Missing value for --cache");
-            System.out.println("Malformed command line argument.");
+            System.out.println("Malformed command line arguments.");
             System.exit(1);
         } else if (!Arrays.toString(args).contains("--query")) {
             System.out.println("Missing value for --query");
-            System.out.println("Malformed command line argument.");
+            System.out.println("Malformed command line arguments.");
             System.exit(1);
         }
         CS1003P2 check = new CS1003P2();
@@ -50,14 +50,14 @@ public class CS1003P2 {
             if (input.equals("--search")) {
                 if (args.length == i + 1 || args[i + 1].equals("--query") || args[i + 1].equals("--cache")) {
                     System.out.println("Missing value for --search");
-                    System.out.println("Malformed command line argument.");
+                    System.out.println("Malformed command line arguments.");
                     System.exit(1);
                 }
                 this.arguments.put("search", args[i + 1]);
             } else if (input.equals("--query")) {
                 if (args.length == i + 1 || args[i + 1].equals("--search") || args[i + 1].equals("--cache")) {
                     System.out.println("Missing value for --query");
-                    System.out.println("Malformed command line argument.");
+                    System.out.println("Malformed command line arguments.");
                     System.exit(1);
                 }
                 if (args[i + 1].split(" ").length > 1) {
@@ -68,7 +68,7 @@ public class CS1003P2 {
             } else if (input.equals("--cache")) {
                 if (args.length == i + 1 || args[i + 1].equals("--query") || args[i + 1].equals("--search")) {
                     System.out.println("Missing value for --query");
-                    System.out.println("Malformed command line argument.");
+                    System.out.println("Malformed command line arguments.");
                     System.exit(1);
                 }
                 File file = new File(args[i + 1]);
