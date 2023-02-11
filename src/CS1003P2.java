@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class CS1003P2 {
@@ -25,11 +26,17 @@ public class CS1003P2 {
     String encodedURL = "";
 
     public static void main(String[] args) {
-        if (args.length > 6) {
-            System.out.println("Too many command line arguments!");
+        if (!Arrays.toString(args).contains("--search")) {
+            System.out.println("Missing value for --search");
+            System.out.println("Malformed command line argument.");
             System.exit(1);
-        } else if (args.length < 6) {
-            System.out.println("Not enough command line arguments!");
+        } else if (!Arrays.toString(args).contains("--cache")) {
+            System.out.println("Missing value for --cache");
+            System.out.println("Malformed command line argument.");
+            System.exit(1);
+        } else if (!Arrays.toString(args).contains("--query")) {
+            System.out.println("Missing value for --query");
+            System.out.println("Malformed command line argument.");
             System.exit(1);
         }
         CS1003P2 check = new CS1003P2();
@@ -49,12 +56,14 @@ public class CS1003P2 {
                     this.arguments.put("query", args[i + 1]);
                 }
             } else if (input.equals("--cache")) {
-                this.arguments.put("cache", args[i + 1]);
+                File file = new File(args[i + 1]);
+                if (!file.exists()) {
+                    System.out.println("Cache directory doesn't exist: " + args[i + 1]);
+                    System.exit(1);
+                } else {
+                    this.arguments.put("cache", args[i + 1]);
+                }
             }
-        }
-        File file = new File(this.arguments.get("cache"));
-        if (!file.exists()) {
-            file.mkdirs();
         }
     }
 
@@ -85,6 +94,10 @@ public class CS1003P2 {
                 File file = new File(cachePath + ".xml");
             }
             callToVenueAPI();
+        } else {
+            System.out.println("Invalid value for --search: " + this.arguments.get("search"));
+            System.out.println("Malformed command line arguments.");
+            System.exit(1);
         }
     }
 
