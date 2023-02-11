@@ -115,6 +115,10 @@ public class CS1003P2 {
             System.out.println("Malformed command line arguments.");
             System.exit(1);
         }
+        if (!checkDirectory()) {
+            System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
+            System.exit(1);
+        }
     }
 
     public boolean checkDirectory() {
@@ -135,10 +139,7 @@ public class CS1003P2 {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = null;
-            if (!checkDirectory()) {
-                System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
-                System.exit(1);
-            } else if (checkCache()) {
+            if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
@@ -193,10 +194,7 @@ public class CS1003P2 {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = null;
-            if (!checkDirectory()) {
-                System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
-                System.exit(1);
-            } else if (checkCache()) {
+            if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
@@ -225,10 +223,7 @@ public class CS1003P2 {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = null;
-            if (!checkDirectory()) {
-                System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
-                System.exit(1);
-            } else if (checkCache()) {
+            if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
