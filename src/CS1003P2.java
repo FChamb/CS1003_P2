@@ -88,38 +88,26 @@ public class CS1003P2 {
         if (this.arguments.get("search").equals("author")) {
             this.url = this.url.replace("~", "author") + query;
             this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
-            /**
-            String cachePath = this.arguments.get("cache") + "/" + this.encodedURL;
-            if (!checkCache()) {
-                File file = new File(cachePath + ".xml");
-            }
-             */
             callToAuthorAPI();
         } else if (this.arguments.get("search").equals("publication")) {
             this.url = this.url.replace("~", "publ") + query;
             this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
-            /**
-            String cachePath = this.arguments.get("cache") + "/" + this.encodedURL;
-            if (!checkCache()) {
-                File file = new File(cachePath + ".xml");
-            }
-             */
             callToPublAPI();
         } else if (this.arguments.get("search").equals("venue")) {
             this.url = this.url.replace("~", "venue") + query;
             this.encodedURL = URLEncoder.encode(this.url, StandardCharsets.UTF_8);
-            /**
-            String cachePath = this.arguments.get("cache") + "/" + encodedURL;
-            if (!checkCache()) {
-                File file = new File(cachePath + ".xml");
-            }
-             */
             callToVenueAPI();
         } else {
             System.out.println("Invalid value for --search: " + this.arguments.get("search"));
             System.out.println("Malformed command line arguments.");
             System.exit(1);
         }
+    }
+
+    public boolean checkDirectory() {
+        String path = this.arguments.get("cache");
+        File directory = new File(path);
+        return directory.isDirectory();
     }
 
     public boolean checkCache() {
@@ -134,7 +122,11 @@ public class CS1003P2 {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = null;
-            if (checkCache()) {
+            if (!checkDirectory()) {
+                System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
+                System.out.println("Malformed command line arguments.");
+                System.exit(1);
+            } else if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
@@ -189,7 +181,11 @@ public class CS1003P2 {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = null;
-            if (checkCache()) {
+            if (!checkDirectory()) {
+                System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
+                System.out.println("Malformed command line arguments.");
+                System.exit(1);
+            } else if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
@@ -218,7 +214,11 @@ public class CS1003P2 {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = null;
-            if (checkCache()) {
+            if (!checkDirectory()) {
+                System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
+                System.out.println("Malformed command line arguments.");
+                System.exit(1);
+            } else if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
             } else {
