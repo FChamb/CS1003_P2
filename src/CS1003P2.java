@@ -48,14 +48,29 @@ public class CS1003P2 {
         for (int i = 0; i < args.length; i++) {
             String input = args[i];
             if (input.equals("--search")) {
+                if (args[i + 1].equals("--query") || args[i + 1].equals("--cache") || args.length == i + 1) {
+                    System.out.println("Missing value for --search");
+                    System.out.println("Malformed command line argument.");
+                    System.exit(1);
+                }
                 this.arguments.put("search", args[i + 1]);
             } else if (input.equals("--query")) {
+                if (args[i + 1].equals("--search") || args[i + 1].equals("--cache") || args.length == i + 1) {
+                    System.out.println("Missing value for --query");
+                    System.out.println("Malformed command line argument.");
+                    System.exit(1);
+                }
                 if (args[i + 1].split(" ").length > 1) {
                     this.arguments.put("query", args[i + 1].replace(" ", "+"));
                 } else {
                     this.arguments.put("query", args[i + 1]);
                 }
             } else if (input.equals("--cache")) {
+                if (args[i + 1].equals("--query") || args[i + 1].equals("--search") || args.length == i + 1) {
+                    System.out.println("Missing value for --query");
+                    System.out.println("Malformed command line argument.");
+                    System.exit(1);
+                }
                 File file = new File(args[i + 1]);
                 if (!file.exists()) {
                     System.out.println("Cache directory doesn't exist: " + args[i + 1]);
