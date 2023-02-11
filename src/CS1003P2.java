@@ -118,7 +118,6 @@ public class CS1003P2 {
             Document document = null;
             if (!checkDirectory()) {
                 System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
-                System.out.println("Malformed command line arguments.");
                 System.exit(1);
             } else if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
@@ -177,7 +176,6 @@ public class CS1003P2 {
             Document document = null;
             if (!checkDirectory()) {
                 System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
-                System.out.println("Malformed command line arguments.");
                 System.exit(1);
             } else if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
@@ -210,7 +208,6 @@ public class CS1003P2 {
             Document document = null;
             if (!checkDirectory()) {
                 System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
-                System.out.println("Malformed command line arguments.");
                 System.exit(1);
             } else if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
