@@ -188,6 +188,7 @@ public class CS1003P2 {
      * pertaining to "hit" is found. For every hit, the item is grabbed and checked to see if it is an element
      * node. Then it is cast to an element and the author is retrieved and printed. A newURL is created with the
      * element url under the author and sent to callToCoAuthors().
+     * @param document - the xml document given by search for data retrieval
      */
     public void callToAuthorAPI(Document document) {
         try {
@@ -251,6 +252,13 @@ public class CS1003P2 {
         }
     }
 
+    /**
+     * Another instance of looking at a xml file. This particular method retrieves publication data. The document
+     * is normalized, and then a list of nodes is created from the tag name "hit". Using a for loop, every hit
+     * checks if the node is an element. Then the node is cast to an element and the number of authors/the title
+     * of the publication is retrieved. This is printed out to the user.
+     * @param document - the xml document given by search for data retrieval
+     */
     public void callToPublAPI(Document document) {
         String title = "";
         int authors = 0;
@@ -267,6 +275,12 @@ public class CS1003P2 {
         }
     }
 
+    /**
+     * The final instance of looking at a xml file. For finding the venue information, the document is first
+     * normalized. Then a list of nodes is created from the tag name "hit". Using a for loop, every node
+     * checks to see if it is an element. It is then cast to an element and the venue is found and printed out.
+     * @param document - the xml document given by search for data retrieval
+     */
     public void callToVenueAPI(Document document) {
         document.getDocumentElement().normalize();
         NodeList nodeList = document.getElementsByTagName("hit");
@@ -279,6 +293,13 @@ public class CS1003P2 {
         }
     }
 
+    /**
+     * Write XML to cache has a try-catch loop to check transformer issues. A new TransformerFactory,
+     * Transformer, DOMSource, and StreamResult are created with the source xml and future cache location.
+     * The transformer puts the xml data into the new cache file for future reference.
+     * @param document - the xml document given by search for reading
+     * @param output - the output stream which contains the location of where to put the new cached file
+     */
     public void writeXMLtoCache(Document document, OutputStream output) {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
