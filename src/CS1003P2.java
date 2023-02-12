@@ -5,14 +5,12 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -20,11 +18,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * The CS1003P2 class contains three private attributes, arguments, url, and encodedURL. The hashmap arguments
+ * contains all three of the command line functions. The url contains a string which has the default link to the api.
+ * This is modified based on a search input. The encodedURL is blank by default and is set to the proper encoded url
+ * one the url variable has been updated.
+ */
 public class CS1003P2 {
     private HashMap<String, String> arguments = new HashMap<>();
     String url = "https://dblp.org/search/~/api?format=xml&c=0&h=40&q=";
     String encodedURL = "";
 
+    /**
+     * The main method acts as a starting point for this program. There are three checks to make sure that
+     * the user inputted all the required command line arguments. Should one of the arguments not be present,
+     * a correctly worded message is returned. Should all the checks pass, an instance of CS1003P2 is created and
+     * findArguments/search are both called.
+     * @param args - the command line arguments presented to the program by the user
+     */
     public static void main(String[] args) {
         if (!Arrays.toString(args).contains("--search")) {
             System.out.println("Missing value for --search");
@@ -44,6 +55,16 @@ public class CS1003P2 {
         check.search();
     }
 
+    /**
+     * Find arguments takes the user's command line arguments as input. A for loop cycles through the array,
+     * and with three checks. Each check looks for a specific value equaling "--search", "--query",
+     * or "--cache". For search and cache if the next index is equal to the array length, and error prints out
+     * that there is no value for its flag. If the next index is not equal to the array length, the private hashmap
+     * is set with the corresponding values. For query, the same index check exists, but it also checks if the
+     * corresponding query input is more than one word. If it is, then a "+" is added in every instance of " ". This
+     * is done to match the specifications of the API.
+     * @param args - the command line arguments passed to findArguments in the main method
+     */
     public void findArguments(String[] args) {
         for (int i = 0; i < args.length; i++) {
             String input = args[i];
@@ -76,21 +97,48 @@ public class CS1003P2 {
         }
     }
 
+    /**
+     * Search is the method that sets the appropriate url, checks the cache directory and calls
+     * to the appropriate API search method. If the cache directory does not exist an error message
+     * is printed and the program terminates.
+     */
     public void search() {
         changeURL();
         if (!checkDirectory()) {
             System.out.println("Cache directory doesn't exist: " + this.arguments.get("cache"));
             System.exit(1);
         }
-        if (this.url.contains("author")) {
-            callToAuthorAPI();
-        } else if (this.url.contains("publ")) {
-            callToPublAPI();
-        } else if (this.url.contains("venue")) {
-            callToVenueAPI();
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = null;
+            if (checkCache()) {
+                File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
+                document = builder.parse(file);
+            } else {
+                FileOutputStream outputStream = new FileOutputStream(this.arguments.get("cache") + "/" + this.encodedURL);
+                document = builder.parse(new URL(this.url).openStream());
+                writeXMLtoCache(document, outputStream);
+            }
+            if (this.url.contains("/author/")) {
+                callToAuthorAPI(document);
+            } else if (this.url.contains("/publ/")) {
+                callToPublAPI(document);
+            } else if (this.url.contains("/venue/")) {
+                callToVenueAPI(document);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
+    /**
+     * Change URL grabs the user's query from the hashmap and then looks at three conditional
+     * checks. Each method looks to see if the "--search" input equals "author", "publication",
+     * or "venue". Then url is properly fit with the correct format, and encodedURL is initiated.
+     * If "--search" input does not equal any of these, then the method prints out an appropriate
+     * message and exits.
+     */
     public void changeURL() {
         String query = this.arguments.get("query");
         if (this.arguments.get("search").equals("author")) {
@@ -109,32 +157,33 @@ public class CS1003P2 {
         }
     }
 
+    /**
+     * This method checks that the provided cache directory exists and is a directory.
+     * @return - returns a boolean value, true if the directory exists, false otherwise
+     */
     public boolean checkDirectory() {
         String path = this.arguments.get("cache");
         File directory = new File(path);
         return directory.isDirectory();
     }
 
+    /**
+     * This method checks if the current search query has already been called. In other terms,
+     * this method ensures that the cache directory contains a file titled the encoded url.
+     * @return - returns a boolean value, true if the file exists in the cache, false otherwise
+     */
     public boolean checkCache() {
         String path = this.arguments.get("cache") + "/" + this.encodedURL;
         File file = new File(path);
         return file.exists();
     }
 
-    public void callToAuthorAPI() {
+    /**
+     * 
+     */
+    public void callToAuthorAPI(Document document) {
         try {
             String author = "";
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = null;
-            if (checkCache()) {
-                File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
-                document = builder.parse(file);
-            } else {
-                FileOutputStream outputStream = new FileOutputStream(this.arguments.get("cache") + "/" + this.encodedURL);
-                document = builder.parse(new URL(this.url).openStream());
-                writeXMLtoCache(document, outputStream);
-            }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -175,21 +224,10 @@ public class CS1003P2 {
         }
     }
 
-    public void callToPublAPI() {
+    public void callToPublAPI(Document document) {
         try {
             String title = "";
             int authors = 0;
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = null;
-            if (checkCache()) {
-                File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
-                document = builder.parse(file);
-            } else {
-                FileOutputStream outputStream = new FileOutputStream(this.arguments.get("cache") + "/" + this.encodedURL);
-                document = builder.parse(new URL(this.url).openStream());
-                writeXMLtoCache(document, outputStream);
-            }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -206,19 +244,8 @@ public class CS1003P2 {
         }
     }
 
-    public void callToVenueAPI() {
+    public void callToVenueAPI(Document document) {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = null;
-            if (checkCache()) {
-                File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
-                document = builder.parse(file);
-            } else {
-                FileOutputStream outputStream = new FileOutputStream(this.arguments.get("cache") + "/" + this.encodedURL);
-                document = builder.parse(new URL(this.url).openStream());
-                writeXMLtoCache(document, outputStream);
-            }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -240,10 +267,8 @@ public class CS1003P2 {
             DOMSource source = new DOMSource(document);
             StreamResult result = new StreamResult(output);
             transformer.transform(source, result);
-        } catch (TransformerConfigurationException e) {
-            e.getMessage();
         } catch (TransformerException e) {
-            e.getMessage();
+            System.out.println(e.getMessage());
         }
     }
 }
