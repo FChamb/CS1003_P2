@@ -98,9 +98,13 @@ public class CS1003P2 {
     }
 
     /**
-     * Search is the method that sets the appropriate url, checks the cache directory and calls
-     * to the appropriate API search method. If the cache directory does not exist an error message
-     * is printed and the program terminates.
+     * Search is the method that sets the appropriate url, checks the cache directory, creates a document
+     * builder, decides if the cache contains a search inquiry, and if not calls to the appropriate API
+     * search method. If the cache directory does not exist an error message is printed and the program terminates.
+     * A try-catch loop creates a Document Build Factory and Builder for reading the xml file. A check then sees
+     * if the cache directory contains the search inquiry. If it does, the document is parsed the cached file. If not,
+     * the document is parsed an url link to the api and a call to writeXMLtoCache creates an instance of the data in
+     * cache.
      */
     public void search() {
         changeURL();
@@ -111,7 +115,7 @@ public class CS1003P2 {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = null;
+            Document document;
             if (checkCache()) {
                 File file = new File(this.arguments.get("cache") + "/" + this.encodedURL);
                 document = builder.parse(file);
@@ -179,7 +183,11 @@ public class CS1003P2 {
     }
 
     /**
-     * 
+     * One of the instances of looking at a xml file. This particular case retries the data for an author search.
+     * A try-catch loop exists as a new URL is created later on. The document is normalized and a list of nodes
+     * pertaining to "hit" is found. For every hit, the item is grabbed and checked to see if it is an element
+     * node. Then it is cast to an element and the author is retrieved and printed. A newURL is created with the
+     * element url under the author and sent to callToCoAuthors().
      */
     public void callToAuthorAPI(Document document) {
         try {
@@ -201,13 +209,32 @@ public class CS1003P2 {
         }
     }
 
+    /**
+     * This method acts as a subbranch of callToAuthorAPI. It takes an url and encodes the value in a string.
+     * Then a new Document Builder Factory and Builder are created for reading a xml file. A check sees if the
+     * cache directory contains the coauthor information. If it does, the document is parsed the cached file. If not,
+     * the document is parsed an url link to the api and a call to writeXMLtoCache creates an instance of the
+     * data in cache. The document is then normalized and a list of nodes pertaining to "r" is found. For every
+     * r, the item is grabbed and checked to see if it is an element node. Then it is cast to an element and
+     * the number of titles is added to the total publications. At the ends, the number of coauthors is found
+     * by looking at how many nodes pertain to "co". This information is printed out and the method ends.
+     * @param url - the input url under each individual author for number of publications and co-authors
+     */
     public void callToCoAuthors(URL url) {
         try {
             int publications = 0;
-            int coAuthors = 0;
+            String newEncodedURL = URLEncoder.encode(String.valueOf(url), StandardCharsets.UTF_8);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(url.openStream());
+            Document document;
+            if (checkCache()) {
+                File file = new File(this.arguments.get("cache") + "/" + newEncodedURL);
+                document = builder.parse(file);
+            } else {
+                FileOutputStream outputStream = new FileOutputStream(this.arguments.get("cache") + "/" + newEncodedURL);
+                document = builder.parse(url.openStream());
+                writeXMLtoCache(document, outputStream);
+            }
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("r");
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -217,7 +244,7 @@ public class CS1003P2 {
                     publications += element.getElementsByTagName("title").getLength();
                 }
             }
-            coAuthors = document.getElementsByTagName("co").getLength();
+            int coAuthors = document.getElementsByTagName("co").getLength();
             System.out.println(" - " + publications + " publications with " + coAuthors + " co-authors.");
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -225,38 +252,30 @@ public class CS1003P2 {
     }
 
     public void callToPublAPI(Document document) {
-        try {
-            String title = "";
-            int authors = 0;
-            document.getDocumentElement().normalize();
-            NodeList nodeList = document.getElementsByTagName("hit");
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node publName = nodeList.item(i);
-                if (publName.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) publName;
-                    authors = element.getElementsByTagName("author").getLength();
-                    title = element.getElementsByTagName("title").item(0).getTextContent();
-                    System.out.println(title + " (number of authors: " + authors + ")");
-                }
+        String title = "";
+        int authors = 0;
+        document.getDocumentElement().normalize();
+        NodeList nodeList = document.getElementsByTagName("hit");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node publName = nodeList.item(i);
+            if (publName.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) publName;
+                authors = element.getElementsByTagName("author").getLength();
+                title = element.getElementsByTagName("title").item(0).getTextContent();
+                System.out.println(title + " (number of authors: " + authors + ")");
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
     }
 
     public void callToVenueAPI(Document document) {
-        try {
-            document.getDocumentElement().normalize();
-            NodeList nodeList = document.getElementsByTagName("hit");
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node venueName = nodeList.item(i);
-                if (venueName.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) venueName;
-                    System.out.println(element.getElementsByTagName("venue").item(0).getTextContent());
-                }
+        document.getDocumentElement().normalize();
+        NodeList nodeList = document.getElementsByTagName("hit");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node venueName = nodeList.item(i);
+            if (venueName.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) venueName;
+                System.out.println(element.getElementsByTagName("venue").item(0).getTextContent());
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
     }
 
