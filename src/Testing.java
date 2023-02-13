@@ -23,7 +23,7 @@ public class Testing {
         arguments.add(new String[]{"--search", "venue", "--cache", "cache", "--query", "philosophy"});
         arguments.add(new String[]{"--search", "venue", "--cache", "cache", "--query", "philosophy"});
         arguments.add(new String[]{"--search", "author", "--cache", "cache"});
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 0; i < 6; i++) {
             test.main(args);
         }
     }
