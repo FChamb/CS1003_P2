@@ -49,6 +49,10 @@ public class CS1003P2 {
             System.out.println("Missing value for --query");
             System.out.println("Malformed command line arguments.");
             System.exit(1);
+        } else if (args.length > 6) {
+            System.out.println("Too many arguments!");
+            System.out.println("Malformed command line arguments.");
+            System.exit(1);
         }
         CS1003P2 check = new CS1003P2();
         check.findArguments(args);
