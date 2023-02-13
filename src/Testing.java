@@ -3,8 +3,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Testing {
-    public void main(String[] args) {
-        CS1003P2 test = new CS1003P2();
+    /**
+     * This class acts as a testing class which can run the main class, CS1003P2. There are 6 tests in this
+     * class which are all explained and used in my practical report.
+     * @param args - not used in this method
+     */
+    public static void main(String[] args) {
         ArrayList<String[]> arguments = new ArrayList<>();
         arguments.add(new String[]{"--search", "--query", "--cache"});
         File file1 = new File("../cache");
@@ -23,8 +27,6 @@ public class Testing {
         arguments.add(new String[]{"--search", "venue", "--cache", "cache", "--query", "philosophy"});
         arguments.add(new String[]{"--search", "venue", "--cache", "cache", "--query", "philosophy"});
         arguments.add(new String[]{"--search", "author", "--cache", "cache"});
-        for (int i = 0; i < 6; i++) {
-            test.main(args);
-        }
+        CS1003P2.main(arguments.get(5));
     }
 }
