@@ -27,6 +27,7 @@ public class Testing {
         arguments.add(new String[]{"--search", "venue", "--cache", "cache", "--query", "philosophy"});
         arguments.add(new String[]{"--search", "venue", "--cache", "cache", "--query", "philosophy"});
         arguments.add(new String[]{"--search", "author", "--cache", "cache"});
+        // Change the test run by altering the number below from 0-5
         CS1003P2.main(arguments.get(5));
     }
 }

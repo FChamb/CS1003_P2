@@ -199,6 +199,10 @@ public class CS1003P2 {
             String author = "";
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("hit");
+            if (nodeList.getLength() == 0) {
+                System.out.println("This author has 0 publications with 0 co-authors.");
+                System.exit(1);
+            }
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node authorName = nodeList.item(i);
                 if (authorName.getNodeType() == Node.ELEMENT_NODE) {
